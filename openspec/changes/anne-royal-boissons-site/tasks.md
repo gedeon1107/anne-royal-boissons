@@ -138,12 +138,12 @@
 - [x] 16.2 Créer la page CGV (`/cgv`) avec mentions obligatoires vente alcool
 - [x] 16.3 Ajouter le footer avec liens légaux et mention "L'abus d'alcool est dangereux pour la santé"
 
-- [ ] 17.1 Tester le flux de commande complet en sandbox FedaPay (panier → checkout → paiement → confirmation)
-- [ ] 17.2 Tester les notifications SMS Africa's Talking en sandbox
-- [ ] 17.3 Tester les emails Resend en sandbox
+- [x] 17.1 Tester le flux de commande complet en sandbox FedaPay (panier → checkout → paiement → confirmation)
+- [x] 17.2 Tester les notifications SMS Africa's Talking en sandbox
+- [x] 17.3 Tester les emails Resend en sandbox
 - [x] 17.4 Tester le back-office complet (produits, stock, commandes, livraisons, employés)
 - [x] 17.5 Tester l'age gate (accès direct URL, cookie, refus mineur)
-- [ ] 17.6 Vérifier la responsivité mobile du site client et du back-office
+- [x] 17.6 Vérifier la responsivité mobile du site client et du back-office
 - [x] 17.7 Tester le script d'import Excel catalogue
 
 ## 18. Mise en production

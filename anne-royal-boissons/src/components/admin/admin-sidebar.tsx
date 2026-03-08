@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -13,6 +14,8 @@ import {
   LogOut,
   Wine,
   MapPin,
+  Menu,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { AdminRole } from "@prisma/client";
@@ -33,19 +36,42 @@ const NAV_ITEMS = [
 
 export function AdminSidebar({ adminRole }: AdminSidebarProps) {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
 
   const items = NAV_ITEMS.filter((item) => !item.adminOnly || adminRole === "ADMIN");
 
   return (
-    <div className="w-64 bg-gray-900 text-white flex flex-col shrink-0">
+    <>
+      {/* Mobile toggle button */}
+      <button
+        onClick={() => setOpen(true)}
+        className="fixed top-4 left-4 z-50 md:hidden bg-gray-900 text-white p-2 rounded-lg shadow-lg"
+      >
+        <Menu className="w-5 h-5" />
+      </button>
+
+      {/* Overlay */}
+      {open && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setOpen(false)}
+        />
+      )}
+
+      <div className={`fixed md:static inset-y-0 left-0 z-50 w-64 bg-gray-900 text-white flex flex-col shrink-0 transform transition-transform md:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}>
       {/* Logo */}
       <div className="p-5 border-b border-gray-800">
+        <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Wine className="w-7 h-7 text-amber-400" />
           <div>
             <p className="font-bold text-sm">Anne Royal</p>
             <p className="text-xs text-gray-400">Back-office</p>
           </div>
+        </div>
+        <button onClick={() => setOpen(false)} className="md:hidden text-gray-400 hover:text-white">
+          <X className="w-5 h-5" />
+        </button>
         </div>
       </div>
 
@@ -57,6 +83,7 @@ export function AdminSidebar({ adminRole }: AdminSidebarProps) {
             <Link
               key={href}
               href={href}
+              onClick={() => setOpen(false)}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
                 ${isActive ? "bg-amber-500 text-white" : "text-gray-400 hover:bg-gray-800 hover:text-white"}`}
             >
@@ -78,6 +105,7 @@ export function AdminSidebar({ adminRole }: AdminSidebarProps) {
           Déconnexion
         </Button>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
