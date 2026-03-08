@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatPrice } from "@/lib/format";
+import { Home, Store, CreditCard } from "lucide-react";
 import Link from "next/link";
 import { createOrder } from "@/lib/actions/order-actions";
 
@@ -22,15 +23,24 @@ interface DeliveryZone {
 
 const checkoutSchema = z.object({
   fullName: z.string().min(2, "Nom requis"),
-  email: z.string().email("Email invalide"),
-  phone: z.string().min(8, "Numéro de téléphone requis"),
+  email: z.string().min(1, "Email requis").email("Email invalide"),
+  phone: z.string().min(10, "Numéro de téléphone requis (min 10 chiffres)"),
   deliveryMode: z.enum(["HOME_DELIVERY", "STORE_PICKUP"]),
   address: z.string().optional(),
   city: z.string().optional(),
   department: z.string().optional(),
   deliveryZoneId: z.string().optional(),
   notes: z.string().optional(),
-});
+}).refine(
+  (data) => data.deliveryMode !== "HOME_DELIVERY" || (data.address && data.address.trim().length > 0),
+  { message: "L'adresse est requise pour la livraison", path: ["address"] }
+).refine(
+  (data) => data.deliveryMode !== "HOME_DELIVERY" || (data.city && data.city.trim().length > 0),
+  { message: "La ville est requise pour la livraison", path: ["city"] }
+).refine(
+  (data) => data.deliveryMode !== "HOME_DELIVERY" || (data.deliveryZoneId && data.deliveryZoneId.length > 0),
+  { message: "La zone de livraison est requise", path: ["deliveryZoneId"] }
+);
 
 type CheckoutFormData = z.infer<typeof checkoutSchema>;
 
@@ -42,6 +52,7 @@ export default function CheckoutPage() {
   const [step, setStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [zones, setZones] = useState<DeliveryZone[]>([]);
+  const [orderError, setOrderError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/delivery-zones")
@@ -53,7 +64,33 @@ export default function CheckoutPage() {
   const form = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: { deliveryMode: "HOME_DELIVERY" },
+    mode: "onTouched",
   });
+
+  async function goToStep(target: number) {
+    if (target > step) {
+      // Validate current step fields before advancing
+      const fieldsToValidate: (keyof CheckoutFormData)[][] = [
+        ["fullName", "email", "phone"],
+        ["deliveryMode", "address", "city", "department", "deliveryZoneId"],
+      ];
+      if (step < fieldsToValidate.length) {
+        const valid = await form.trigger(fieldsToValidate[step]);
+        if (!valid) return;
+        // Extra cross-field check for delivery step
+        if (step === 1 && form.getValues("deliveryMode") === "HOME_DELIVERY") {
+          const { address, city, deliveryZoneId } = form.getValues();
+          if (!address?.trim() || !city?.trim() || !deliveryZoneId) {
+            if (!address?.trim()) form.setError("address", { message: "L'adresse est requise pour la livraison" });
+            if (!city?.trim()) form.setError("city", { message: "La ville est requise pour la livraison" });
+            if (!deliveryZoneId) form.setError("deliveryZoneId", { message: "La zone de livraison est requise" });
+            return;
+          }
+        }
+      }
+    }
+    setStep(target);
+  }
 
   if (items.length === 0) {
     return (
@@ -65,8 +102,6 @@ export default function CheckoutPage() {
       </div>
     );
   }
-
-  const [orderError, setOrderError] = useState<string | null>(null);
 
   async function handleSubmit(data: CheckoutFormData) {
     setIsSubmitting(true);
@@ -172,7 +207,7 @@ export default function CheckoutPage() {
                 )}
               </div>
             </div>
-            <Button type="button" onClick={() => setStep(1)} className="w-full">
+            <Button type="button" onClick={() => goToStep(1)} className="w-full">
               Continuer
             </Button>
           </div>
@@ -189,7 +224,7 @@ export default function CheckoutPage() {
                 className={`p-4 border-2 rounded-xl text-left transition-colors
                   ${form.watch("deliveryMode") === "HOME_DELIVERY" ? "border-amber-500 bg-amber-50" : "border-gray-200"}`}
               >
-                <p className="font-semibold">🏠 Livraison à domicile</p>
+                <p className="font-semibold flex items-center gap-2"><Home className="w-5 h-5" /> Livraison à domicile</p>
                 <p className="text-sm text-muted-foreground mt-1">Cotonou et environs</p>
               </button>
               <button
@@ -198,7 +233,7 @@ export default function CheckoutPage() {
                 className={`p-4 border-2 rounded-xl text-left transition-colors
                   ${form.watch("deliveryMode") === "STORE_PICKUP" ? "border-amber-500 bg-amber-50" : "border-gray-200"}`}
               >
-                <p className="font-semibold">🏪 Retrait en boutique</p>
+                <p className="font-semibold flex items-center gap-2"><Store className="w-5 h-5" /> Retrait en boutique</p>
                 <p className="text-sm text-muted-foreground mt-1">Gratuit</p>
               </button>
             </div>
@@ -219,15 +254,30 @@ export default function CheckoutPage() {
                       </option>
                     ))}
                   </select>
+                  {form.formState.errors.deliveryZoneId && (
+                    <p className="text-sm text-destructive mt-1">
+                      {form.formState.errors.deliveryZoneId.message}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="address">Adresse *</Label>
                   <Input {...form.register("address")} id="address" placeholder="Quartier, rue..." />
+                  {form.formState.errors.address && (
+                    <p className="text-sm text-destructive mt-1">
+                      {form.formState.errors.address.message}
+                    </p>
+                  )}
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label htmlFor="city">Ville *</Label>
                     <Input {...form.register("city")} id="city" placeholder="Cotonou" />
+                    {form.formState.errors.city && (
+                      <p className="text-sm text-destructive mt-1">
+                        {form.formState.errors.city.message}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <Label htmlFor="department">Département *</Label>
@@ -243,10 +293,10 @@ export default function CheckoutPage() {
             </div>
 
             <div className="flex gap-3">
-              <Button type="button" variant="outline" onClick={() => setStep(0)} className="w-full">
+              <Button type="button" variant="outline" onClick={() => goToStep(0)} className="w-full">
                 Retour
               </Button>
-              <Button type="button" onClick={() => setStep(2)} className="w-full">
+              <Button type="button" onClick={() => goToStep(2)} className="w-full">
                 Continuer
               </Button>
             </div>
@@ -289,12 +339,12 @@ export default function CheckoutPage() {
             </div>
 
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm">
-              <p className="font-semibold text-amber-800 mb-1">💳 Paiement Mobile Money</p>
+              <p className="font-semibold text-amber-800 mb-1 flex items-center gap-2"><CreditCard className="w-5 h-5" /> Paiement Mobile Money</p>
               <p className="text-amber-700">MTN Mobile Money, Moov Money, Celtis Cash via FedaPay</p>
             </div>
 
             <div className="flex gap-3">
-              <Button type="button" variant="outline" onClick={() => setStep(1)} className="w-full">
+              <Button type="button" variant="outline" onClick={() => goToStep(1)} className="w-full">
                 Retour
               </Button>
               <Button type="submit" disabled={isSubmitting} className="w-full bg-amber-500 hover:bg-amber-400">

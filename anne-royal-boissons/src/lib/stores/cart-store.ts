@@ -72,6 +72,7 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: "anne-royal-cart",
+      version: 2,
     }
   )
 );

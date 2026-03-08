@@ -41,6 +41,23 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ received: true });
       }
 
+      // ── Idempotence: skip if already processed ────────────────────
+      if (order.status !== "PENDING") {
+        console.info(`FedaPay webhook: order ${order.id} already ${order.status}, skipping.`);
+        return NextResponse.json({ received: true });
+      }
+
+      // ── Amount verification ───────────────────────────────────────
+      const webhookAmount = Number(data?.amount);
+      const orderTotal = Number(order.total);
+      if (!webhookAmount || Math.abs(webhookAmount - orderTotal) > 1) {
+        console.warn(
+          `FedaPay webhook: amount mismatch for transaction ${transactionId}. ` +
+            `Webhook: ${webhookAmount}, Order: ${orderTotal}. Order ${order.id} NOT confirmed.`
+        );
+        return NextResponse.json({ received: true });
+      }
+
       // Update order status and decrement stock atomically
       await prisma.$transaction(async (tx) => {
         await tx.order.update({

@@ -52,11 +52,11 @@ export async function sendEmail(params: {
 // ─── Notification helpers ─────────────────────────────────────────────────────
 
 const STATUS_SMS: Partial<Record<OrderStatus, string>> = {
-  CONFIRMED: "✅ Votre commande Anne Royal Boissons a été confirmée. Nous préparons votre commande.",
-  PREPARING: "📦 Votre commande Anne Royal Boissons est en cours de préparation.",
-  OUT_FOR_DELIVERY: "🚴 Votre commande Anne Royal Boissons est en route ! Un livreur est en chemin.",
-  DELIVERED: "✅ Votre commande Anne Royal Boissons a été livrée. Merci pour votre confiance !",
-  CANCELLED: "❌ Votre commande Anne Royal Boissons a été annulée. Contactez-nous pour plus d'info.",
+  CONFIRMED: "Votre commande Anne Royal Boissons a été confirmée. Nous préparons votre commande.",
+  PREPARING: "Votre commande Anne Royal Boissons est en cours de préparation.",
+  OUT_FOR_DELIVERY: "Votre commande Anne Royal Boissons est en route ! Un livreur est en chemin.",
+  DELIVERED: "Votre commande Anne Royal Boissons a été livrée. Merci pour votre confiance !",
+  CANCELLED: "Votre commande Anne Royal Boissons a été annulée. Contactez-nous pour plus d'info.",
 };
 
 export async function sendOrderConfirmationNotification(orderId: string) {
@@ -70,7 +70,7 @@ export async function sendOrderConfirmationNotification(orderId: string) {
 
   // SMS
   if (order.guestPhone) {
-    const smsText = `🍷 Anne Royal Boissons - Commande reçue !\nRéf: ${orderRef}\nTotal: ${Number(order.total).toLocaleString("fr-BJ")} FCFA\nVous recevrez un SMS de confirmation.`;
+    const smsText = `[Anne Royal] Commande reçue !\nRéf: ${orderRef}\nTotal: ${Number(order.total).toLocaleString("fr-BJ")} FCFA\nVous recevrez un SMS de confirmation.`;
     await sendSMS(order.guestPhone, smsText);
   }
 
@@ -82,14 +82,14 @@ export async function sendOrderConfirmationNotification(orderId: string) {
 
     await sendEmail({
       to: order.guestEmail,
-      subject: `✅ Commande ${orderRef} reçue — Anne Royal Boissons`,
+      subject: `Commande ${orderRef} reçue — Anne Royal Boissons`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: #1a1a1a; padding: 20px; text-align: center;">
             <h1 style="color: #f59e0b; margin: 0;">Anne Royal Boissons</h1>
           </div>
           <div style="padding: 30px;">
-            <h2>Votre commande a été reçue ! 🎉</h2>
+            <h2>Votre commande a été reçue !</h2>
             <p>Bonjour ${order.guestName},</p>
             <p>Votre commande <strong>${orderRef}</strong> a bien été reçue. Nous vous confirmons les détails ci-dessous.</p>
             <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
@@ -139,7 +139,7 @@ export async function sendDeliveryAssignmentSMS(
   if (!order) return;
 
   const orderRef = order.id.slice(0, 8).toUpperCase();
-  const smsText = `🍷 Anne Royal Boissons\nBonjour ${deliveryPersonName} !\nVous avez une livraison à effectuer.\nCommande: ${orderRef}\nClient: ${order.guestName}\nTél: ${order.guestPhone}\nAdresse: ${order.deliveryAddress}, ${order.deliveryCity}`;
+  const smsText = `[Anne Royal]\nBonjour ${deliveryPersonName} !\nVous avez une livraison à effectuer.\nCommande: ${orderRef}\nClient: ${order.guestName}\nTél: ${order.guestPhone}\nAdresse: ${order.deliveryAddress}, ${order.deliveryCity}`;
 
   await sendSMS(deliveryPersonPhone, smsText);
 }

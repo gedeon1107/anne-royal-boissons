@@ -2,7 +2,7 @@
 import { formatDate } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Truck } from "lucide-react";
+import { Truck, Bike } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -55,8 +55,8 @@ export default async function AdminLivraisonsPage() {
                       {order.status === "OUT_FOR_DELIVERY" ? "En livraison" : "À dispatcher"}
                     </span>
                     {order.delivery ? (
-                      <p className="text-xs text-muted-foreground">
-                        🚴 {order.delivery.deliveryPersonName}
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Bike className="w-3.5 h-3.5" /> {order.delivery.deliveryPersonName}
                       </p>
                     ) : (
                       <Button asChild size="sm">

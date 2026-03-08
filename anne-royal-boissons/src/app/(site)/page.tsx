@@ -20,6 +20,16 @@ export default async function HomePage() {
     }),
   ]);
 
+  // Serialize Decimal fields to plain numbers for client components
+  const serializedProducts = featuredProducts.map((p) => ({
+    ...p,
+    price: p.displayedPrice ? Number(p.displayedPrice) : Number(p.price),
+    displayedPrice: p.displayedPrice ? Number(p.displayedPrice) : null,
+    floorPrice: p.floorPrice ? Number(p.floorPrice) : null,
+    createdAt: p.createdAt.toISOString(),
+    updatedAt: p.updatedAt.toISOString(),
+  }));
+
   return (
     <div>
       {/* Hero Section */}
@@ -39,14 +49,14 @@ export default async function HomePage() {
             <Link href="/catalogue">Voir tout le catalogue</Link>
           </Button>
         </div>
-        {featuredProducts.length === 0 ? (
+        {serializedProducts.length === 0 ? (
           <p className="text-center text-muted-foreground py-12">
             Le catalogue sera bientôt disponible.
           </p>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {serializedProducts.map((product) => (
+              <ProductCard key={product.id} product={product as any} />
             ))}
           </div>
         )}

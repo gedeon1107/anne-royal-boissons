@@ -23,18 +23,46 @@ interface CreateOrderInput {
 
 export async function createOrder(input: CreateOrderInput) {
   try {
+    // ── Validate email format ───────────────────────────────────────
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!input.email || !emailRegex.test(input.email)) {
+      return { success: false, error: "Adresse email invalide." };
+    }
+
+    // ── Validate phone format (min 8 digits) ────────────────────────
+    const digitsOnly = input.phone.replace(/[\s\-\+\(\)]/g, "");
+    if (digitsOnly.length < 8 || !/^\d+$/.test(digitsOnly)) {
+      return { success: false, error: "Numéro de téléphone invalide." };
+    }
+
+    // ── Validate delivery fields when HOME_DELIVERY ─────────────────
+    if (input.deliveryMode === "HOME_DELIVERY") {
+      if (!input.address?.trim()) {
+        return { success: false, error: "L'adresse de livraison est requise." };
+      }
+      if (!input.city?.trim()) {
+        return { success: false, error: "La ville de livraison est requise." };
+      }
+      if (!input.deliveryZoneId) {
+        return { success: false, error: "La zone de livraison est requise." };
+      }
+    }
+
     // ── Link to logged-in user if present ───────────────────────────
     const session = await auth();
     const userId = session?.user?.id && !session.user.isAdmin ? session.user.id : undefined;
 
-    // ── Validate stock availability ─────────────────────────────────
+    // ── Validate stock & load authoritative prices from DB ──────────
     const productIds = input.items.map((i) => i.productId);
     const products = await prisma.product.findMany({
       where: { id: { in: productIds } },
-      select: { id: true, name: true, stock: true, isActive: true },
+      select: { id: true, name: true, stock: true, isActive: true, price: true, displayedPrice: true },
     });
 
     const productMap = new Map(products.map((p) => [p.id, p]));
+
+    let serverSubtotal = 0;
+    const serverItems: { productId: string; quantity: number; unitPrice: number }[] = [];
 
     for (const item of input.items) {
       const product = productMap.get(item.productId);
@@ -50,16 +78,23 @@ export async function createOrder(input: CreateOrderInput) {
           error: `Stock insuffisant pour "${product.name}" (disponible : ${product.stock}, demandé : ${item.quantity}).`,
         };
       }
+      // Use DB price — never trust client-submitted unitPrice
+      const dbPrice = product.displayedPrice ? Number(product.displayedPrice) : Number(product.price);
+      serverSubtotal += dbPrice * item.quantity;
+      serverItems.push({ productId: item.productId, quantity: item.quantity, unitPrice: dbPrice });
     }
 
-    // ── Calculate delivery fee ──────────────────────────────────────
+    // ── Calculate delivery fee from DB ──────────────────────────────
     let deliveryFee = 0;
     if (input.deliveryMode === "HOME_DELIVERY" && input.deliveryZoneId) {
       const zone = await prisma.deliveryZone.findUnique({ where: { id: input.deliveryZoneId } });
-      deliveryFee = Number(zone?.price ?? 0);
+      if (!zone) {
+        return { success: false, error: "Zone de livraison introuvable." };
+      }
+      deliveryFee = Number(zone.price);
     }
 
-    const total = input.subtotal + deliveryFee;
+    const total = serverSubtotal + deliveryFee;
 
     // ── Create order in DB ──────────────────────────────────────────
     const order = await prisma.order.create({
@@ -75,12 +110,12 @@ export async function createOrder(input: CreateOrderInput) {
         deliveryPhone: input.phone,
         deliveryZoneId: input.deliveryZoneId,
         notes: input.notes,
-        subtotal: input.subtotal,
+        subtotal: serverSubtotal,
         deliveryFee,
         total,
         status: "PENDING",
         items: {
-          create: input.items.map((item) => ({
+          create: serverItems.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
             unitPrice: item.unitPrice,

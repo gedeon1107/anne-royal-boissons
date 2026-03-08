@@ -1,12 +1,13 @@
 import Link from "next/link";
-import { Wine } from "lucide-react";
+import { Wine, AlertTriangle } from "lucide-react";
 
 export function SiteFooter() {
   return (
     <footer className="bg-gray-900 text-gray-300">
       {/* Legal warning banner */}
-      <div className="bg-amber-900/50 border-b border-amber-800 py-2 text-center text-xs text-amber-200">
-        ⚠️ L&apos;abus d&apos;alcool est dangereux pour la santé. À consommer avec modération.
+      <div className="bg-amber-900/50 border-b border-amber-800 py-2 text-center text-xs text-amber-200 flex items-center justify-center gap-1.5">
+        <AlertTriangle className="w-4 h-4 text-amber-400 inline-block flex-shrink-0" />
+        L&apos;abus d&apos;alcool est dangereux pour la santé. À consommer avec modération.
         Vente interdite aux mineurs de moins de 18 ans.
       </div>
 

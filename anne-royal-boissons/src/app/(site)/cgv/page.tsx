@@ -1,3 +1,5 @@
+import { AlertTriangle } from "lucide-react";
+
 export const metadata = {
   title: "Conditions générales de vente — Anne Royal Boissons",
 };
@@ -8,8 +10,9 @@ export default function CGVPage() {
       <h1 className="text-3xl font-bold mb-8">Conditions générales de vente</h1>
 
       <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-8">
-        <p className="font-semibold text-amber-800">
-          ⚠️ L&apos;abus d&apos;alcool est dangereux pour la santé. À consommer avec modération.
+        <p className="font-semibold text-amber-800 flex items-center gap-2">
+          <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0" />
+          L&apos;abus d&apos;alcool est dangereux pour la santé. À consommer avec modération.
           La vente d&apos;alcool est interdite aux mineurs de moins de 18 ans.
         </p>
       </div>

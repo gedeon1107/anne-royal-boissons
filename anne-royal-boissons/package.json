@@ -39,6 +39,7 @@
     "africastalking": "^0.7.9",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
+    "cloudinary": "^2.9.0",
     "clsx": "^2.1.1",
     "fedapay": "^1.2.5",
     "lucide-react": "^0.576.0",

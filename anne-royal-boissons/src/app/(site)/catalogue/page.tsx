@@ -68,7 +68,14 @@ export default async function CataloguePage({ searchParams }: CataloguePageProps
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={{
+              ...product,
+              price: product.displayedPrice ? Number(product.displayedPrice) : Number(product.price),
+              displayedPrice: product.displayedPrice ? Number(product.displayedPrice) : null,
+              floorPrice: product.floorPrice ? Number(product.floorPrice) : null,
+              createdAt: product.createdAt.toISOString(),
+              updatedAt: product.updatedAt.toISOString(),
+            } as any} />
           ))}
         </div>
       )}

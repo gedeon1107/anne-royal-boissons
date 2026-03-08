@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ProductGallery } from "@/components/site/product-gallery";
 import { AddToCartButton } from "@/components/site/add-to-cart-button";
+import { PriceNegotiation } from "@/components/site/price-negotiation";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/lib/format";
 
@@ -28,6 +29,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   if (!product) notFound();
 
+  // Serialize Decimal/Date for client components
+  const displayedPrice = product.displayedPrice ? Number(product.displayedPrice) : Number(product.price);
+  const serializedProduct = {
+    ...product,
+    price: displayedPrice,
+    displayedPrice: product.displayedPrice ? Number(product.displayedPrice) : null,
+    floorPrice: product.floorPrice ? Number(product.floorPrice) : null,
+    createdAt: product.createdAt.toISOString(),
+    updatedAt: product.updatedAt.toISOString(),
+  };
+  const hasNegotiation = !!product.displayedPrice && !!product.floorPrice;
+
   const isOutOfStock = product.stock === 0;
 
   return (
@@ -45,7 +58,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
           <div className="flex items-center gap-3">
             <span className="text-3xl font-bold text-amber-600">
-              {formatPrice(Number(product.price))}
+              {formatPrice(serializedProduct.price)}
             </span>
             {isOutOfStock && (
               <Badge variant="destructive" className="text-sm">
@@ -63,7 +76,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <p className="text-muted-foreground leading-relaxed">{product.description}</p>
           )}
 
-          <AddToCartButton product={product} disabled={isOutOfStock} />
+          <AddToCartButton product={serializedProduct as any} disabled={isOutOfStock} />
+
+          {hasNegotiation && !isOutOfStock && (
+            <PriceNegotiation product={serializedProduct as any} />
+          )}
         </div>
       </div>
     </div>

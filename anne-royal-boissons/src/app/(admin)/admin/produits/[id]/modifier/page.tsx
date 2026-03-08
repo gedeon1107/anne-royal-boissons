@@ -16,15 +16,20 @@ export default async function ModifierProduitPage({ params }: Props) {
   const [product, categories] = await Promise.all([
     prisma.product.findUnique({
       where: { id },
-      select: { id: true, name: true, description: true, price: true, stock: true, categoryId: true, images: true, isActive: true },
+      select: { id: true, name: true, description: true, price: true, displayedPrice: true, floorPrice: true, stock: true, categoryId: true, images: true, isActive: true },
     }),
     prisma.category.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } }),
   ]);
 
   if (!product) notFound();
 
-  // Serialize Decimal price to a plain number for the Client Component
-  const serializedProduct = { ...product, price: Number(product.price) };
+  // Serialize Decimal prices to plain numbers for the Client Component
+  const serializedProduct = {
+    ...product,
+    price: Number(product.price),
+    displayedPrice: product.displayedPrice ? Number(product.displayedPrice) : null,
+    floorPrice: product.floorPrice ? Number(product.floorPrice) : null,
+  };
 
   return (
     <div>

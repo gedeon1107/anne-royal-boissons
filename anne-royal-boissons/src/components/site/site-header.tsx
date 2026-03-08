@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCartStore } from "@/lib/stores/cart-store";
 import { ShoppingCart, Wine, Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const NAV_LINKS = [
   { href: "/catalogue", label: "Catalogue" },
@@ -16,6 +16,11 @@ const NAV_LINKS = [
 export function SiteHeader() {
   const itemCount = useCartStore((s) => s.getItemCount());
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b shadow-sm">
@@ -50,7 +55,7 @@ export function SiteHeader() {
             <Button variant="ghost" size="icon" asChild className="relative">
               <Link href="/panier">
                 <ShoppingCart className="w-5 h-5" />
-                {itemCount > 0 && (
+                {mounted && itemCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
                     {itemCount > 9 ? "9+" : itemCount}
                   </span>

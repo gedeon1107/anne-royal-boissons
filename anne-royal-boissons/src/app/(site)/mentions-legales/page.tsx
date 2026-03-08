@@ -1,3 +1,5 @@
+import { AlertTriangle } from "lucide-react";
+
 export const metadata = {
   title: "Mentions légales — Anne Royal Boissons",
 };
@@ -27,8 +29,9 @@ export default function MentionsLegalesPage() {
         <section>
           <h2 className="text-xl font-semibold mb-3">Obligations légales — Vente d&apos;alcool</h2>
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-            <p className="font-semibold text-amber-800 mb-2">
-              ⚠️ L&apos;abus d&apos;alcool est dangereux pour la santé. À consommer avec modération.
+            <p className="font-semibold text-amber-800 mb-2 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0" />
+              L&apos;abus d&apos;alcool est dangereux pour la santé. À consommer avec modération.
             </p>
             <ul className="list-disc pl-4 space-y-1 text-amber-800 text-sm">
               <li>La vente d&apos;alcool est interdite aux mineurs de moins de 18 ans.</li>

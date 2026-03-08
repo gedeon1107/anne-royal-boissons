@@ -26,12 +26,10 @@ export function slugify(text: string): string {
 }
 
 /**
- * Encode a local image path so browsers and Next.js Image can handle
- * filenames with spaces, commas, % signs and other special characters.
+ * Return a safe image URL for use with Next.js Image.
  * External URLs (http/https) are returned as-is.
  */
 export function safeImageUrl(path: string): string {
   if (!path || path.startsWith("http")) return path;
-  // Encode each segment while preserving the leading slashes
-  return path.split("/").map((segment) => encodeURIComponent(segment)).join("/");
+  return path;
 }
