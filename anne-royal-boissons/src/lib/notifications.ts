@@ -3,17 +3,19 @@ import { Resend } from "resend";
 import { prisma } from "@/lib/prisma";
 import type { OrderStatus } from "@prisma/client";
 
-// ─── Africa's Talking SMS ─────────────────────────────────────────────────────
+// ─── Africa's Talking SMS (lazy init to avoid build-time validation error) ────
 
-const AT = AfricasTalking({
-  apiKey: process.env.AFRICASTALKING_API_KEY!,
-  username: process.env.AFRICASTALKING_USERNAME!,
-});
-
-const sms = AT.SMS;
+function getSMS() {
+  const AT = AfricasTalking({
+    apiKey: process.env.AFRICAS_TALKING_API_KEY || process.env.AFRICASTALKING_API_KEY || "",
+    username: process.env.AFRICAS_TALKING_USERNAME || process.env.AFRICASTALKING_USERNAME || "sandbox",
+  });
+  return AT.SMS;
+}
 
 export async function sendSMS(to: string, message: string): Promise<boolean> {
   try {
+    const sms = getSMS();
     await sms.send({
       to: [to.startsWith("+") ? to : `+${to}`],
       message,
