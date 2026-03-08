@@ -2,10 +2,10 @@
 
 - [x] 1.1 Créer le projet Next.js 15 avec App Router, TypeScript et Tailwind CSS
 - [x] 1.2 Installer et configurer shadcn/ui (init, thème, composants de base)
-- [ ] 1.3 Configurer Neon.tech : créer le projet PostgreSQL et récupérer la connection string
+- [x] 1.3 Configurer Neon.tech : créer le projet PostgreSQL et récupérer la connection string
 - [x] 1.4 Installer et initialiser Prisma, connecter à Neon
 - [x] 1.5 Configurer les variables d'environnement (.env.local, .env.example)
-- [ ] 1.6 Configurer le déploiement Vercel (connecter le repo, variables d'env)
+- [x] 1.6 Configurer le déploiement Vercel (connecter le repo, variables d'env)
 - [x] 1.7 Mettre en place ESLint, Prettier et les scripts npm (dev, build, lint)
 
 ## 2. Schéma base de données (Prisma)
@@ -19,7 +19,7 @@
 - [x] 2.7 Définir le modèle `AdminUser` (id, name, email, passwordHash, role: ADMIN | EMPLOYEE, isActive)
 - [x] 2.8 Définir le modèle `Delivery` (orderId, deliveryPersonName, deliveryPersonPhone, assignedAt)
 - [x] 2.9 Définir le modèle `StockAlert` (productId, threshold)
-- [ ] 2.10 Exécuter la migration initiale (`prisma migrate dev`)
+- [x] 2.10 Exécuter la migration initiale (`prisma migrate dev`)
 
 ## 3. Authentification
 
@@ -141,10 +141,10 @@
 - [ ] 17.1 Tester le flux de commande complet en sandbox FedaPay (panier → checkout → paiement → confirmation)
 - [ ] 17.2 Tester les notifications SMS Africa's Talking en sandbox
 - [ ] 17.3 Tester les emails Resend en sandbox
-- [ ] 17.4 Tester le back-office complet (produits, stock, commandes, livraisons, employés)
-- [ ] 17.5 Tester l'age gate (accès direct URL, cookie, refus mineur)
+- [x] 17.4 Tester le back-office complet (produits, stock, commandes, livraisons, employés)
+- [x] 17.5 Tester l'age gate (accès direct URL, cookie, refus mineur)
 - [ ] 17.6 Vérifier la responsivité mobile du site client et du back-office
-- [ ] 17.7 Tester le script d'import Excel catalogue
+- [x] 17.7 Tester le script d'import Excel catalogue
 
 ## 18. Mise en production
 
@@ -153,6 +153,6 @@
 - [ ] 18.3 Configurer le domaine personnalisé sur Vercel
 - [ ] 18.4 Mettre à jour les variables d'environnement Vercel avec les clés production
 - [ ] 18.5 Configurer les URLs de webhook FedaPay en production
-- [ ] 18.6 Importer le catalogue complet (~200 produits) depuis le fichier Excel
-- [ ] 18.7 Créer le compte admin initial et les comptes employés
+- [x] 18.6 Importer le catalogue complet (~200 produits) depuis le fichier Excel
+- [x] 18.7 Créer le compte admin initial et les comptes employés
 - [ ] 18.8 Effectuer un test d'achat réel end-to-end avant ouverture au public

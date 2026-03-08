@@ -4,16 +4,16 @@
   "installCommand": "npm install",
   "outputDirectory": ".next",
   "env": {
-    "DATABASE_URL": "@DATABASE_URL",
-    "NEXTAUTH_SECRET": "@NEXTAUTH_SECRET",
-    "NEXTAUTH_URL": "@NEXTAUTH_URL",
-    "RESEND_API_KEY": "@RESEND_API_KEY",
-    "RESEND_FROM_EMAIL": "@RESEND_FROM_EMAIL",
-    "AFRICAS_TALKING_API_KEY": "@AFRICAS_TALKING_API_KEY",
-    "AFRICAS_TALKING_USERNAME": "@AFRICAS_TALKING_USERNAME",
+    "DATABASE_URL": "postgresql://neondb_owner:npg_KntNJMq7Sg2b@ep-rough-pine-abvnlt0g-pooler.eu-west-2.aws.neon.tech/anne_royal?sslmode=require&channel_binding=require",
+    "NEXTAUTH_SECRET": "nykslhOz590siwpyJaSLcuzVUqJ7rZz/JHPuW9u/4f0=",
+    "NEXTAUTH_URL": "http://localhost:3000",
+    "RESEND_API_KEY": "re_4WrZE4we_MCa1S4SwjhUrjvFbXjWeueTY",
+    "RESEND_FROM_EMAIL": "onboarding@resend.dev",
+    "AFRICAS_TALKING_API_KEY": "oddPJVdRX",
+    "AFRICAS_TALKING_USERNAME": "AFRICASTKNG",
     "FEDAPAY_SECRET_KEY": "@FEDAPAY_SECRET_KEY",
     "FEDAPAY_PUBLIC_KEY": "@FEDAPAY_PUBLIC_KEY",
-    "NEXT_PUBLIC_BASE_URL": "@NEXT_PUBLIC_BASE_URL"
+    "NEXT_PUBLIC_BASE_URL": "http://localhost:3000"
   },
   "headers": [
     {
