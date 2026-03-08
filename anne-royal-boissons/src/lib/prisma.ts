@@ -4,9 +4,9 @@ import { PrismaNeon } from "@prisma/adapter-neon";
 function createPrismaClient() {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
-    // During build without DB, return a client that will fail at runtime
-    // This is expected — DATABASE_URL must be set in production
-    return new PrismaClient();
+    throw new Error(
+      "DATABASE_URL is not set. Please configure it in your environment variables."
+    );
   }
   const adapter = new PrismaNeon({ connectionString });
   return new PrismaClient({
