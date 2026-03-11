@@ -8,8 +8,7 @@ const AGE_GATE_PATH = "/age-verification";
 // Public paths that don't need age gate
 const PUBLIC_PATHS = [
   AGE_GATE_PATH,
-  "/api/auth",
-  "/api/fedapay",
+  "/api/",
   "/mentions-legales",
   "/cgv",
   "/_next",
