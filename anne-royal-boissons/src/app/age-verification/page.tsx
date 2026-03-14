@@ -73,9 +73,9 @@ function AgeVerificationContent() {
             </Button>
             <Button
               onClick={handleDecline}
-              variant="outline"
+              variant="ghost"
               size="lg"
-              className="border-white/30 text-white hover:bg-white/10 text-lg px-10"
+              className="bg-transparent border border-white/30 text-white hover:bg-white/10 hover:text-white text-lg px-10"
             >
               Non, j&apos;ai moins de 18 ans
             </Button>
