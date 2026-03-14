@@ -1,13 +1,40 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaNeon } from "@prisma/adapter-neon";
 
+function normalizeDatabaseUrl(rawValue: string) {
+  const trimmed = rawValue.trim();
+
+  // On some platforms env vars are pasted with surrounding quotes.
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    return trimmed.slice(1, -1).trim();
+  }
+
+  return trimmed;
+}
+
 function createPrismaClient() {
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) {
+  const rawConnectionString = process.env.DATABASE_URL;
+  if (!rawConnectionString) {
     throw new Error(
       "DATABASE_URL is not set. Please configure it in your environment variables."
     );
   }
+
+  const connectionString = normalizeDatabaseUrl(rawConnectionString);
+
+  try {
+    // Validate early so production errors are explicit.
+    // eslint-disable-next-line no-new
+    new URL(connectionString);
+  } catch {
+    throw new Error(
+      "DATABASE_URL is invalid. Ensure it starts with postgresql:// or postgres:// and has no surrounding quotes."
+    );
+  }
+
   const adapter = new PrismaNeon({ connectionString });
   return new PrismaClient({
     adapter,

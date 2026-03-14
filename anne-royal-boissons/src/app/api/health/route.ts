@@ -2,11 +2,39 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
+function normalizeDatabaseUrl(rawValue: string) {
+  const trimmed = rawValue.trim();
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    return trimmed.slice(1, -1).trim();
+  }
+  return trimmed;
+}
+
 export async function GET() {
   const checks: Record<string, string> = {};
+  const rawDatabaseUrl = process.env.DATABASE_URL;
 
   // 1. Check critical environment variables
-  checks.DATABASE_URL = process.env.DATABASE_URL ? "✅ set" : "❌ MISSING";
+  if (!rawDatabaseUrl) {
+    checks.DATABASE_URL = "❌ MISSING";
+    checks.databaseUrlFormat = "❌ not available";
+  } else {
+    const normalizedDatabaseUrl = normalizeDatabaseUrl(rawDatabaseUrl);
+
+    checks.DATABASE_URL =
+      normalizedDatabaseUrl === rawDatabaseUrl ? "✅ set" : "⚠️ set (quoted/trimmed)";
+
+    try {
+      const parsed = new URL(normalizedDatabaseUrl);
+      checks.databaseUrlFormat = `✅ valid (${parsed.protocol}//${parsed.hostname})`;
+    } catch {
+      checks.databaseUrlFormat = "❌ invalid URL format";
+    }
+  }
+
   checks.AUTH_SECRET = process.env.AUTH_SECRET ? "✅ set" : "❌ MISSING";
 
   // 2. Test database connection
